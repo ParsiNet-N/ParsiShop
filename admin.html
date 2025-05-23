@@ -1,150 +1,63 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>پنل مدیریت پارسی‌شاپ</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ورود | پنل پارسی‌شاپ</title>
   <style>
     body {
-      font-family: 'Vazirmatn', sans-serif;
-      background: #f5f5f5;
-      direction: rtl;
-      padding: 2rem;
-    }
-    h1 {
+      font-family: Tahoma, sans-serif;
+      background: #f7f7f7;
       text-align: center;
-      margin-bottom: 2rem;
-      color: #d32f2f;
+      direction: rtl;
+      padding: 100px 20px;
     }
-    form {
-      max-width: 600px;
-      margin: 0 auto 3rem auto;
+    .login-box {
       background: white;
-      padding: 1.5rem;
+      padding: 2rem;
       border-radius: 10px;
+      max-width: 400px;
+      margin: auto;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
-    .product-list {
-      max-width: 900px;
-      margin: 0 auto;
+    input, button {
+      padding: 10px;
+      margin-top: 10px;
+      width: 100%;
+      font-size: 16px;
     }
-    .card {
-      margin-bottom: 1rem;
+    #admin-panel {
+      display: none;
     }
   </style>
 </head>
 <body>
 
-  <h1>پنل مدیریت پارسی‌شاپ</h1>
+  <div class="login-box" id="login-box">
+    <h2>ورود به پنل مدیریت</h2>
+    <input type="password" id="password" placeholder="رمز عبور را وارد کنید">
+    <button onclick="checkPassword()">ورود</button>
+    <p id="error" style="color: red;"></p>
+  </div>
 
-  <form id="product-form">
-    <input type="hidden" id="product-index" />
-    <div class="mb-3">
-      <label for="name" class="form-label">نام محصول</label>
-      <input type="text" id="name" class="form-control" placeholder="نام محصول" required />
-    </div>
-    <div class="mb-3">
-      <label for="description" class="form-label">توضیحات محصول</label>
-      <textarea id="description" class="form-control" placeholder="توضیحات محصول" required></textarea>
-    </div>
-    <div class="mb-3">
-      <label for="price" class="form-label">قیمت (تومان)</label>
-      <input type="number" id="price" class="form-control" placeholder="قیمت" required min="0" />
-    </div>
-    <div class="mb-3">
-      <label for="image" class="form-label">آدرس تصویر محصول</label>
-      <input type="url" id="image" class="form-control" placeholder="آدرس تصویر" required />
-    </div>
-    <button type="submit" class="btn btn-danger w-100">ذخیره محصول</button>
-  </form>
-
-  <div class="product-list" id="product-list"></div>
+  <div id="admin-panel">
+    <h1>🎉 خوش آمدید به پنل مدیریت پارسی‌شاپ</h1>
+    <p>اینجا می‌تونی محصولات رو اضافه، ویرایش یا حذف کنی.</p>
+    <!-- ادامه کدهای پنل مدیریت اینجا قرار می‌گیرند -->
+  </div>
 
   <script>
-    const form = document.getElementById('product-form');
-    const nameInput = document.getElementById('name');
-    const descriptionInput = document.getElementById('description');
-    const priceInput = document.getElementById('price');
-    const imageInput = document.getElementById('image');
-    const productIndexInput = document.getElementById('product-index');
-    const productList = document.getElementById('product-list');
+    const password = "Nn111111Nourmohammadzadeh";
 
-    let products = JSON.parse(localStorage.getItem('parsishop-products')) || [];
-
-    function saveProducts() {
-      localStorage.setItem('parsishop-products', JSON.stringify(products));
-      renderProducts();
-    }
-
-    function renderProducts() {
-      productList.innerHTML = '';
-      if (products.length === 0) {
-        productList.innerHTML = '<p class="text-center text-muted">هیچ محصولی ثبت نشده است.</p>';
-        return;
-      }
-
-      products.forEach((product, index) => {
-        const card = document.createElement('div');
-        card.className = 'card shadow-sm';
-        card.innerHTML = `
-          <div class="card-body d-flex flex-column flex-md-row align-items-center">
-            <img src="${product.image}" alt="${product.name}" style="width:120px; height:80px; object-fit:cover; border-radius:8px; margin-bottom:10px; margin-md-bottom:0;">
-            <div class="flex-grow-1 me-md-3 text-md-start text-center">
-              <h5>${product.name}</h5>
-              <p class="mb-1">${product.description}</p>
-              <p class="text-danger fw-bold">${product.price.toLocaleString()} تومان</p>
-            </div>
-            <div class="d-flex flex-column gap-2">
-              <button class="btn btn-outline-primary btn-sm" onclick="editProduct(${index})">ویرایش</button>
-              <button class="btn btn-outline-danger btn-sm" onclick="deleteProduct(${index})">حذف</button>
-            </div>
-          </div>
-        `;
-        productList.appendChild(card);
-      });
-    }
-
-    function editProduct(index) {
-      const product = products[index];
-      nameInput.value = product.name;
-      descriptionInput.value = product.description;
-      priceInput.value = product.price;
-      imageInput.value = product.image;
-      productIndexInput.value = index;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function deleteProduct(index) {
-      if (confirm('آیا مطمئن هستید که می‌خواهید این محصول را حذف کنید؟')) {
-        products.splice(index, 1);
-        saveProducts();
-      }
-    }
-
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      const newProduct = {
-        name: nameInput.value.trim(),
-        description: descriptionInput.value.trim(),
-        price: Number(priceInput.value),
-        image: imageInput.value.trim()
-      };
-
-      const index = productIndexInput.value;
-      if (index === '') {
-        products.push(newProduct);
+    function checkPassword() {
+      const input = document.getElementById("password").value;
+      if (input === password) {
+        document.getElementById("login-box").style.display = "none";
+        document.getElementById("admin-panel").style.display = "block";
       } else {
-        products[index] = newProduct;
+        document.getElementById("error").textContent = "رمز اشتباه است!";
       }
-
-      productIndexInput.value = '';
-      form.reset();
-      saveProducts();
-    });
-
-    renderProducts();
+    }
   </script>
 
 </body>
